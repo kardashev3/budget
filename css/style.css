@@ -153,6 +153,62 @@ body {
 }
 
 /* ============================================
+   Monthly Summary (이번 달 요약)
+   ============================================ */
+.monthly-summary {
+    margin-bottom: var(--spacing-md);
+}
+
+.monthly-header {
+    margin-bottom: var(--spacing-sm);
+}
+
+.monthly-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.monthly-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+}
+
+.monthly-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.monthly-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.monthly-amount {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.monthly-card.income .monthly-amount {
+    color: var(--toss-blue);
+}
+
+.monthly-card.expense .monthly-amount {
+    color: #F04452;
+}
+
+.monthly-card.balance .monthly-amount {
+    color: var(--text-primary);
+}
+
+/* ============================================
    Main Content
    ============================================ */
 .main-content {

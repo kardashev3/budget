@@ -152,6 +152,44 @@ function calculateWeeklySummary() {
 // UI 렌더링 함수
 // ============================================
 
+/**
+ * 이번 달 전체 수입/지출/잔액 계산
+ */
+function calculateMonthlyTotal() {
+    let income = 0;
+    let expense = 0;
+
+    accountingData.forEach(item => {
+        const type = getCategoryType(item.category);
+        if (type === 'income') {
+            income += item.amount;
+        } else {
+            expense += item.amount;
+        }
+    });
+
+    return { income, expense, balance: income - expense };
+}
+
+/**
+ * 월간 요약 렌더링
+ */
+function renderMonthlySummary() {
+    const { income, expense, balance } = calculateMonthlyTotal();
+
+    document.getElementById('monthly-income').textContent = formatCurrency(income);
+    document.getElementById('monthly-expense').textContent = formatCurrency(expense);
+
+    const balanceEl = document.getElementById('monthly-balance');
+    if (balance >= 0) {
+        balanceEl.textContent = formatCurrency(balance);
+        balanceEl.style.color = '#3182F6';
+    } else {
+        balanceEl.textContent = `-${formatCurrency(Math.abs(balance))}`;
+        balanceEl.style.color = '#F04452';
+    }
+}
+
 function renderSummary(week) {
     const total = calculateWeekTotal(week);
     const comparison = calculateWeekComparison(week);
@@ -472,6 +510,7 @@ function renderWeekTabs() {
 function renderAll() {
     if (!selectedWeek) return;
 
+    renderMonthlySummary();
     renderSummary(selectedWeek);
     renderCategoryList(selectedWeek);
     renderPieChart(selectedWeek);

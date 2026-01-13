@@ -26,7 +26,7 @@ const CONFIG = {
      * 예시: 'https://script.google.com/macros/s/xxx.../exec'
      * 빈 문자열('')이면 샘플 데이터 사용
      */
-    SHEET_API_URL: 'https://script.google.com/macros/s/AKfycbwIRpxjoRwsz1AjLUqpxkz5XQ0GvGfcKPO1PgPHuI4a9pZtCcL-kHBng9pYqfflUnbndA/exec',
+    SHEET_API_URL: '',
 
     // 카테고리 색상
     CATEGORY_COLORS: {
@@ -46,4 +46,3 @@ const CONFIG = {
 // 설정 freeze (수정 방지)
 Object.freeze(CONFIG);
 Object.freeze(CONFIG.CATEGORY_COLORS);
-
