@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>우리집 가계부 💰</title>
+    <meta name="description" content="2026년 가계부 현황을 한눈에! 주차별 지출, 카테고리별 분석을 제공하는 가족 가계부 웹 앱">
+    <meta name="keywords" content="가계부, 가정 재정, 지출 관리, 예산 추적">
+    <meta name="author" content="우리 가족">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="우리집 가계부 💰">
+    <meta property="og:description" content="2026년 가계부 현황을 한눈에 확인하세요">
+    <meta property="og:image" content="./assets/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./css/style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+    </div>
+
+    <div class="container">
+        <header class="glass-card header">
+            <h1>🏠 우리집 가계부</h1>
+            <p class="subtitle">2026년 1월 가계부 현황</p>
+            <button class="refresh-btn" onclick="refreshData()" title="데이터 새로고침">
+                🔄 동기화
+            </button>
+        </header>
+
+        <section class="summary-section">
+            <div class="glass-card summary-card income">
+                <div class="card-icon">💵</div>
+                <div class="card-content">
+                    <span class="label">투자소득</span>
+                    <span class="amount" id="income-total">0원</span>
+                </div>
+            </div>
+            <div class="glass-card summary-card fixed">
+                <div class="card-icon">📋</div>
+                <div class="card-content">
+                    <span class="label">고정비</span>
+                    <span class="amount" id="fixed-total">0원</span>
+                </div>
+            </div>
+            <div class="glass-card summary-card variable">
+                <div class="card-icon">🛒</div>
+                <div class="card-content">
+                    <span class="label">변동비</span>
+                    <span class="amount" id="variable-total">0원</span>
+                </div>
+            </div>
+            <div class="glass-card summary-card balance">
+                <div class="card-icon">📊</div>
+                <div class="card-content">
+                    <span class="label">총 지출</span>
+                    <span class="amount" id="balance-total">0원</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="category-section">
+            <h2 class="section-title">📈 카테고리별 지출</h2>
+            <div class="category-grid" id="category-grid">
+                <!-- 카테고리별 차트가 여기에 생성됩니다 -->
+            </div>
+        </section>
+
+        <section class="chart-section">
+            <h2 class="section-title">📊 주차별 지출 추이</h2>
+            <div class="glass-card chart-card">
+                <canvas id="weekly-chart"></canvas>
+            </div>
+        </section>
+
+        <section class="weekly-section">
+            <h2 class="section-title">📅 주차별 내역</h2>
+            <div class="week-tabs" id="week-tabs">
+                <!-- 주차 탭이 여기에 생성됩니다 -->
+            </div>
+            <div class="glass-card transactions-card">
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>일자</th>
+                            <th>구분</th>
+                            <th>금액</th>
+                            <th>비고</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-body">
+                        <!-- 거래 내역이 여기에 생성됩니다 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer class="glass-card footer">
+            <p>Made with 💕 for our family</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./js/config.js"></script>
+    <script src="./js/data.js"></script>
+    <script src="./js/app.js"></script>
+</body>
+
+</html>
