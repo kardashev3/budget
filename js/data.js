@@ -127,9 +127,61 @@ function updateLastUpdatedDisplay() {
 }
 
 /**
+ * 토스트 메시지 표시
+ * @param {string} message - 표시할 메시지
+ * @param {string} type - 메시지 타입 (success, warning, error)
+ */
+function showToast(message, type = 'success') {
+    // 기존 토스트 제거
+    const existingToast = document.querySelector('.toast');
+    if (existingToast) existingToast.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 15px 30px;
+        background: ${type === 'success' ? 'rgba(16, 185, 129, 0.9)' :
+            type === 'warning' ? 'rgba(245, 158, 11, 0.9)' :
+                'rgba(239, 68, 68, 0.9)'};
+        color: white;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        z-index: 9999;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        animation: slideDown 0.3s ease;
+    `;
+
+    document.body.appendChild(toast);
+
+    // 3초 후 자동 제거
+    setTimeout(() => {
+        toast.style.animation = 'slideUp 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+/**
  * 데이터 새로고침 (수동 동기화용)
  */
 async function refreshData() {
+    const apiUrl = typeof CONFIG !== 'undefined' ? CONFIG.SHEET_API_URL : '';
+
+    // API URL이 설정되지 않은 경우 안내 메시지
+    if (!apiUrl) {
+        showToast('⚠️ 구글 시트 연동이 설정되지 않았습니다. config.js에서 SHEET_API_URL을 설정하세요.', 'warning');
+        console.log('📊 샘플 데이터를 사용합니다. 구글 시트 연동은 config.js의 SHEET_API_URL을 설정하세요.');
+        return;
+    }
+
+    showToast('🔄 데이터 동기화 중...', 'success');
+
     await fetchAccountingData();
 
     // 앱 다시 렌더링
@@ -141,4 +193,20 @@ async function refreshData() {
         }
         initApp();
     }
+
+    showToast('✅ 데이터 동기화 완료!', 'success');
 }
+
+// 토스트 애니메이션 스타일 추가
+const toastStyle = document.createElement('style');
+toastStyle.textContent = `
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes slideUp {
+        from { opacity: 1; transform: translateX(-50%) translateY(0); }
+        to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+`;
+document.head.appendChild(toastStyle);
