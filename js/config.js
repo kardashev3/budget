@@ -47,3 +47,4 @@ const CONFIG = {
 Object.freeze(CONFIG);
 Object.freeze(CONFIG.CATEGORY_COLORS);
 
+
