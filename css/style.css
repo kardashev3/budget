@@ -153,22 +153,68 @@ body {
 }
 
 /* ============================================
-   Monthly Summary (이번 달 요약)
+   Island (섹션 그룹)
    ============================================ */
-.monthly-summary {
+.island {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-md);
+}
+
+.island-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid #F0F1F4;
+}
+
+.island-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.island-badge {
+    background: var(--toss-blue);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.island-section {
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid #F0F1F4;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: var(--spacing-md);
 }
 
-.monthly-header {
-    margin-bottom: var(--spacing-sm);
-}
-
-.monthly-title {
-    font-size: 1rem;
-    font-weight: 700;
+.section-title {
+    font-size: 0.95rem;
+    font-weight: 600;
     color: var(--text-primary);
 }
 
+.section-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   Monthly Cards (수입/지출/잔액)
+   ============================================ */
 .monthly-cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -176,11 +222,10 @@ body {
 }
 
 .monthly-card {
-    background: var(--bg-card);
+    background: var(--bg-primary);
     border-radius: var(--radius-md);
     padding: var(--spacing-md);
     text-align: center;
-    box-shadow: var(--shadow-sm);
 }
 
 .monthly-label {
@@ -206,6 +251,53 @@ body {
 
 .monthly-card.balance .monthly-amount {
     color: var(--text-primary);
+}
+
+/* ============================================
+   Weekly Summary (주간 요약)
+   ============================================ */
+.weekly-summary {
+    text-align: center;
+    padding: var(--spacing-md);
+    background: linear-gradient(135deg, var(--toss-blue) 0%, #1E6FE6 100%);
+    border-radius: var(--radius-lg);
+    color: white;
+}
+
+.weekly-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+}
+
+.weekly-comparison {
+    display: flex;
+    justify-content: center;
+}
+
+.comparison-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.comparison-badge.up {
+    background: rgba(240, 68, 82, 0.2);
+    color: #FFB3B8;
+}
+
+.comparison-badge.down {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.comparison-badge.neutral {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 /* ============================================

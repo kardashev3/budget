@@ -4,7 +4,8 @@
 
 // 현재 선택된 주차
 let selectedWeek = null;
-let pieChart = null;
+let monthlyPieChart = null;
+let weeklyPieChart = null;
 let trendChart = null;
 
 // ============================================
@@ -118,7 +119,6 @@ function calculateCategoryBreakdown(week = null) {
         total += item.amount;
     });
 
-    // 비율 계산 및 정렬
     const result = Object.entries(categories)
         .map(([name, amount]) => ({
             name,
@@ -148,13 +148,6 @@ function calculateWeeklySummary() {
     });
 }
 
-// ============================================
-// UI 렌더링 함수
-// ============================================
-
-/**
- * 이번 달 전체 수입/지출/잔액 계산
- */
 function calculateMonthlyTotal() {
     let income = 0;
     let expense = 0;
@@ -171,12 +164,16 @@ function calculateMonthlyTotal() {
     return { income, expense, balance: income - expense };
 }
 
-/**
- * 월간 요약 렌더링
- */
-function renderMonthlySummary() {
-    const { income, expense, balance } = calculateMonthlyTotal();
+// ============================================
+// UI 렌더링 함수
+// ============================================
 
+/**
+ * 월간 섹션 렌더링
+ */
+function renderMonthlySection() {
+    // 수입/지출/잔액
+    const { income, expense, balance } = calculateMonthlyTotal();
     document.getElementById('monthly-income').textContent = formatCurrency(income);
     document.getElementById('monthly-expense').textContent = formatCurrency(expense);
 
@@ -188,9 +185,43 @@ function renderMonthlySummary() {
         balanceEl.textContent = `-${formatCurrency(Math.abs(balance))}`;
         balanceEl.style.color = '#F04452';
     }
+
+    // 카테고리 breakdown (전체 월간)
+    const { categories, total } = calculateCategoryBreakdown(null);
+    document.getElementById('monthly-category-total').textContent = `총 ${formatCurrency(total)}`;
+
+    const container = document.getElementById('monthly-category-list');
+    container.innerHTML = categories.map(cat => `
+        <div class="category-item" data-category="${cat.name}">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <div class="category-icon" style="background: ${cat.color}20">
+                    ${cat.icon}
+                </div>
+                <div class="category-info">
+                    <div class="category-name-row">
+                        <span class="category-name">${cat.name}</span>
+                    </div>
+                    <div class="category-bar-container">
+                        <div class="category-bar" style="width: ${cat.percent}%; background: ${cat.color}"></div>
+                    </div>
+                </div>
+                <div class="category-values">
+                    <div class="category-amount">${formatCurrency(cat.amount)}</div>
+                    <div class="category-percent">${cat.percent}%</div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    // 월간 파이 차트
+    renderPieChart('monthly-pie-chart', categories, 'monthly');
 }
 
-function renderSummary(week) {
+/**
+ * 주간 섹션 렌더링
+ */
+function renderWeeklySection(week) {
+    // 주간 지출 요약
     const total = calculateWeekTotal(week);
     const comparison = calculateWeekComparison(week);
 
@@ -198,42 +229,22 @@ function renderSummary(week) {
     document.getElementById('weekly-total').textContent = formatCurrency(total);
 
     const comparisonEl = document.getElementById('weekly-comparison');
-
     if (!comparison.hasPrevious) {
         comparisonEl.innerHTML = `<span class="comparison-badge neutral">첫 주차 데이터</span>`;
     } else if (comparison.percent > 0) {
-        comparisonEl.innerHTML = `
-            <span class="comparison-badge up">
-                ▲ ${Math.abs(comparison.percent)}% 증가 (${formatCurrency(comparison.diff, true)})
-            </span>
-        `;
+        comparisonEl.innerHTML = `<span class="comparison-badge up">▲ ${Math.abs(comparison.percent)}% 증가</span>`;
     } else if (comparison.percent < 0) {
-        comparisonEl.innerHTML = `
-            <span class="comparison-badge down">
-                ▼ ${Math.abs(comparison.percent)}% 감소 (${formatCurrency(comparison.diff, true)})
-            </span>
-        `;
+        comparisonEl.innerHTML = `<span class="comparison-badge down">▼ ${Math.abs(comparison.percent)}% 감소</span>`;
     } else {
         comparisonEl.innerHTML = `<span class="comparison-badge neutral">전주와 동일</span>`;
     }
-}
 
-function renderCategoryList(week) {
-    const { categories, total } = calculateCategoryBreakdown(week);
+    // 주간 카테고리 breakdown
+    const { categories, total: weekTotal } = calculateCategoryBreakdown(week);
     const weekData = getWeekData(week);
-    const container = document.getElementById('category-list');
+    document.getElementById('weekly-category-total').textContent = `총 ${formatCurrency(weekTotal)}`;
 
-    document.getElementById('category-subtitle').textContent = `총 ${formatCurrency(total)}`;
-
-    if (categories.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <div class="empty-state-text">지출 내역이 없습니다</div>
-            </div>
-        `;
-        return;
-    }
+    const container = document.getElementById('weekly-category-list');
 
     // 카테고리별 거래 내역 그룹핑
     const getTransactionsByCategory = (categoryName) => {
@@ -242,18 +253,16 @@ function renderCategoryList(week) {
             if (type === 'income') return false;
             return getCategorySubtype(item.category) === categoryName;
         }).sort((a, b) => {
-            // 날짜 내림차순
             const dateA = a.date.replace(/\. /g, '-');
             const dateB = b.date.replace(/\. /g, '-');
             return dateB.localeCompare(dateA);
         });
     };
 
-    container.innerHTML = categories.map((cat, index) => {
+    container.innerHTML = categories.map(cat => {
         const transactions = getTransactionsByCategory(cat.name);
         const transactionCount = transactions.length;
 
-        // 상세 내역 HTML
         const detailsHtml = transactions.map(item => {
             const dateParts = item.date.split('. ');
             const displayDate = `${dateParts[1]}/${dateParts[2]}`;
@@ -295,28 +304,28 @@ function renderCategoryList(week) {
             </div>
         `;
     }).join('');
+
+    // 주간 파이 차트
+    renderPieChart('weekly-pie-chart', categories, 'weekly');
 }
 
-// 카테고리 토글 함수
-function toggleCategory(headerEl) {
-    const categoryItem = headerEl.closest('.category-item');
-    categoryItem.classList.toggle('expanded');
-}
-
-function renderPieChart(week) {
-    const { categories } = calculateCategoryBreakdown(week);
-    const ctx = document.getElementById('category-pie-chart');
-
+/**
+ * 파이 차트 렌더링
+ */
+function renderPieChart(canvasId, categories, type) {
+    const ctx = document.getElementById(canvasId);
     if (!ctx) return;
 
     // 기존 차트 제거
-    if (pieChart) {
-        pieChart.destroy();
+    if (type === 'monthly' && monthlyPieChart) {
+        monthlyPieChart.destroy();
+    } else if (type === 'weekly' && weeklyPieChart) {
+        weeklyPieChart.destroy();
     }
 
     if (categories.length === 0) return;
 
-    pieChart = new Chart(ctx, {
+    const chart = new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: categories.map(c => c.name),
@@ -336,8 +345,6 @@ function renderPieChart(week) {
                     backgroundColor: '#1A1A1A',
                     padding: 12,
                     cornerRadius: 8,
-                    titleFont: { family: 'Pretendard', size: 13 },
-                    bodyFont: { family: 'Pretendard', size: 12 },
                     callbacks: {
                         label: (context) => {
                             const percent = categories[context.dataIndex].percent;
@@ -348,15 +355,23 @@ function renderPieChart(week) {
             }
         }
     });
+
+    if (type === 'monthly') {
+        monthlyPieChart = chart;
+    } else {
+        weeklyPieChart = chart;
+    }
 }
 
+/**
+ * 주차별 추이 차트 렌더링
+ */
 function renderTrendChart() {
     const weeklyData = calculateWeeklySummary();
     const ctx = document.getElementById('weekly-trend-chart');
 
     if (!ctx) return;
 
-    // 기존 차트 제거
     if (trendChart) {
         trendChart.destroy();
     }
@@ -366,31 +381,31 @@ function renderTrendChart() {
     trendChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: weeklyData.map(d => `${d.week}주차`),
+            labels: weeklyData.map(d => `${d.week}주`),
             datasets: [
                 {
                     label: '고정비',
                     data: weeklyData.map(d => d.fixed),
                     backgroundColor: '#6366F1',
                     borderRadius: 6,
-                    barThickness: 20
+                    barThickness: 16
                 },
                 {
                     label: '변동비',
                     data: weeklyData.map(d => d.variable),
                     backgroundColor: '#F59E0B',
                     borderRadius: 6,
-                    barThickness: 20
+                    barThickness: 16
                 },
                 {
-                    label: '총 지출',
+                    label: '총계',
                     data: weeklyData.map(d => d.total),
                     type: 'line',
                     borderColor: '#3182F6',
                     backgroundColor: 'transparent',
-                    borderWidth: 3,
+                    borderWidth: 2,
                     pointBackgroundColor: '#3182F6',
-                    pointRadius: 5,
+                    pointRadius: 4,
                     tension: 0.3
                 }
             ]
@@ -405,13 +420,13 @@ function renderTrendChart() {
                     position: 'top',
                     labels: {
                         usePointStyle: true,
-                        padding: 15,
-                        font: { size: 11, weight: '600' }
+                        padding: 12,
+                        font: { size: 10, weight: '600' }
                     }
                 },
                 tooltip: {
                     backgroundColor: '#1A1A1A',
-                    padding: 12,
+                    padding: 10,
                     cornerRadius: 8,
                     callbacks: {
                         label: (ctx) => ` ${ctx.dataset.label}: ${formatCurrency(ctx.raw)}`
@@ -421,13 +436,13 @@ function renderTrendChart() {
             scales: {
                 x: {
                     grid: { display: false },
-                    ticks: { font: { size: 12, weight: '600' } }
+                    ticks: { font: { size: 11, weight: '600' } }
                 },
                 y: {
                     beginAtZero: true,
                     grid: { color: '#F0F1F4' },
                     ticks: {
-                        font: { size: 11 },
+                        font: { size: 10 },
                         callback: (value) => {
                             if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
                             if (value >= 1000) return (value / 1000) + 'K';
@@ -440,52 +455,10 @@ function renderTrendChart() {
     });
 }
 
-function renderTransactions(week) {
-    const data = getWeekData(week);
-    const container = document.getElementById('transaction-list');
-
-    // 최근 순 정렬 (날짜 내림차순)
-    const sorted = [...data].sort((a, b) => {
-        const dateA = a.date.replace(/\. /g, '-').replace(/ /g, '');
-        const dateB = b.date.replace(/\. /g, '-').replace(/ /g, '');
-        return dateB.localeCompare(dateA);
-    });
-
-    document.getElementById('transaction-count').textContent = `${sorted.length}건`;
-
-    if (sorted.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <div class="empty-state-text">거래 내역이 없습니다</div>
-            </div>
-        `;
-        return;
-    }
-
-    // 최대 10개만 표시
-    const displayed = sorted.slice(0, 10);
-
-    container.innerHTML = displayed.map(item => {
-        const type = getCategoryType(item.category);
-        const subtype = getCategorySubtype(item.category);
-        const isIncome = type === 'income';
-        const dateParts = item.date.split('. ');
-        const displayDate = `${dateParts[1]}/${dateParts[2]}`;
-
-        return `
-            <div class="transaction-item">
-                <div class="transaction-icon">${getCategoryIcon(subtype)}</div>
-                <div class="transaction-info">
-                    <div class="transaction-note">${item.note || subtype}</div>
-                    <div class="transaction-date">${displayDate} · ${subtype}</div>
-                </div>
-                <div class="transaction-amount ${isIncome ? 'income' : 'expense'}">
-                    ${isIncome ? '+' : '-'}${formatCurrency(item.amount)}
-                </div>
-            </div>
-        `;
-    }).join('');
+// 카테고리 토글 함수
+function toggleCategory(headerEl) {
+    const categoryItem = headerEl.closest('.category-item');
+    categoryItem.classList.toggle('expanded');
 }
 
 function renderWeekTabs() {
@@ -498,7 +471,6 @@ function renderWeekTabs() {
         </button>
     `).join('');
 
-    // 이벤트 리스너
     container.querySelectorAll('.week-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             selectedWeek = parseInt(tab.dataset.week);
@@ -510,10 +482,8 @@ function renderWeekTabs() {
 function renderAll() {
     if (!selectedWeek) return;
 
-    renderMonthlySummary();
-    renderSummary(selectedWeek);
-    renderCategoryList(selectedWeek);
-    renderPieChart(selectedWeek);
+    renderMonthlySection();
+    renderWeeklySection(selectedWeek);
     renderTrendChart();
     renderWeekTabs();
 }
@@ -523,18 +493,14 @@ function renderAll() {
 // ============================================
 
 async function initApp() {
-    // 데이터 로딩
     await fetchAccountingData();
 
-    // 가장 최근 주차 선택
     const weeks = getUniqueWeeks();
     if (weeks.length > 0) {
         selectedWeek = weeks[weeks.length - 1];
     }
 
-    // 렌더링
     renderAll();
 }
 
-// DOM 로드 후 실행
 document.addEventListener('DOMContentLoaded', initApp);

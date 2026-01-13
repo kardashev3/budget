@@ -40,11 +40,15 @@
 
         <!-- 메인 컨텐츠 -->
         <main class="main-content">
-            <!-- 이번 달 요약 -->
-            <section class="monthly-summary">
-                <div class="monthly-header">
-                    <span class="monthly-title">2026년 1월</span>
+
+            <!-- ========== 월간 섹션 (Island) ========== -->
+            <section class="island monthly-island">
+                <div class="island-header">
+                    <h2 class="island-title">📅 이번 달</h2>
+                    <span class="island-badge">2026년 1월</span>
                 </div>
+
+                <!-- 월간 수입/지출/잔액 -->
                 <div class="monthly-cards">
                     <div class="monthly-card income">
                         <span class="monthly-label">수입</span>
@@ -59,41 +63,59 @@
                         <span class="monthly-amount" id="monthly-balance">₩0</span>
                     </div>
                 </div>
-            </section>
 
-            <!-- 이번 주 요약 카드 -->
-            <section class="summary-card">
-                <div class="summary-header">
-                    <span class="summary-label">이번 주 지출</span>
-                    <span class="week-badge" id="current-week">3주차</span>
-                </div>
-                <div class="summary-amount" id="weekly-total">₩0</div>
-                <div class="summary-comparison" id="weekly-comparison">
-                    <span class="comparison-badge neutral">전주 대비 계산중...</span>
-                </div>
-            </section>
-
-            <!-- 카테고리별 지출 -->
-            <section class="card">
-                <div class="card-header">
-                    <h2 class="card-title">카테고리별 지출</h2>
-                    <span class="card-subtitle" id="category-subtitle">총 ₩0</span>
-                </div>
-                <div class="category-chart-container">
-                    <canvas id="category-pie-chart"></canvas>
-                </div>
-                <div class="category-list" id="category-list">
-                    <!-- 카테고리 항목들 -->
+                <!-- 월간 카테고리별 지출 -->
+                <div class="island-section">
+                    <div class="section-header">
+                        <span class="section-title">카테고리별 지출</span>
+                        <span class="section-subtitle" id="monthly-category-total">총 ₩0</span>
+                    </div>
+                    <div class="category-chart-container">
+                        <canvas id="monthly-pie-chart"></canvas>
+                    </div>
+                    <div class="category-list" id="monthly-category-list">
+                        <!-- 월간 카테고리 항목들 -->
+                    </div>
                 </div>
             </section>
 
-            <!-- 주차별 추이 차트 -->
-            <section class="card">
-                <div class="card-header">
-                    <h2 class="card-title">주차별 지출 추이</h2>
+            <!-- ========== 주간 섹션 (Island) ========== -->
+            <section class="island weekly-island">
+                <div class="island-header">
+                    <h2 class="island-title">📊 이번 주</h2>
+                    <span class="island-badge" id="current-week">3주차</span>
                 </div>
-                <div class="chart-container">
-                    <canvas id="weekly-trend-chart"></canvas>
+
+                <!-- 주간 지출 요약 -->
+                <div class="weekly-summary">
+                    <div class="weekly-amount" id="weekly-total">₩0</div>
+                    <div class="weekly-comparison" id="weekly-comparison">
+                        <span class="comparison-badge neutral">전주 대비 계산중...</span>
+                    </div>
+                </div>
+
+                <!-- 주간 카테고리별 지출 -->
+                <div class="island-section">
+                    <div class="section-header">
+                        <span class="section-title">카테고리별 지출</span>
+                        <span class="section-subtitle" id="weekly-category-total">총 ₩0</span>
+                    </div>
+                    <div class="category-chart-container">
+                        <canvas id="weekly-pie-chart"></canvas>
+                    </div>
+                    <div class="category-list" id="weekly-category-list">
+                        <!-- 주간 카테고리 항목들 -->
+                    </div>
+                </div>
+
+                <!-- 주차별 추이 차트 -->
+                <div class="island-section">
+                    <div class="section-header">
+                        <span class="section-title">주차별 추이</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="weekly-trend-chart"></canvas>
+                    </div>
                 </div>
             </section>
 
