@@ -3,19 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <!-- SEO Meta Tags -->
-    <title>우리집 가계부 💰</title>
-    <meta name="description" content="2026년 가계부 현황을 한눈에! 주차별 지출, 카테고리별 분석을 제공하는 가족 가계부 웹 앱">
-    <meta name="keywords" content="가계부, 가정 재정, 지출 관리, 예산 추적">
-    <meta name="author" content="우리 가족">
-
-    <!-- Open Graph / Social Media -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="우리집 가계부 💰">
-    <meta property="og:description" content="2026년 가계부 현황을 한눈에 확인하세요">
-    <meta property="og:image" content="./assets/og-image.png">
+    <title>우리집 가계부</title>
+    <meta name="description" content="가계부 현황을 한눈에! 주차별 지출, 카테고리별 분석을 제공하는 가족 가계부">
+    <meta name="theme-color" content="#3182F6">
 
     <!-- Favicon -->
     <link rel="icon"
@@ -34,93 +27,71 @@
 </head>
 
 <body>
-    <div class="background-shapes">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
-        <div class="shape shape-4"></div>
-    </div>
-
-    <div class="container">
-        <header class="glass-card header">
-            <h1>🏠 우리집 가계부</h1>
-            <p class="subtitle">2026년 1월 가계부 현황</p>
-            <button class="refresh-btn" onclick="refreshData()" title="데이터 새로고침">
-                🔄 동기화
-            </button>
+    <div class="app">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="header-title">🏠 우리집 가계부</h1>
+                <button class="sync-btn" onclick="refreshData()" title="동기화">
+                    <span class="sync-icon">↻</span>
+                </button>
+            </div>
         </header>
 
-        <section class="summary-section">
-            <div class="glass-card summary-card income">
-                <div class="card-icon">💵</div>
-                <div class="card-content">
-                    <span class="label">투자소득</span>
-                    <span class="amount" id="income-total">0원</span>
+        <!-- 메인 컨텐츠 -->
+        <main class="main-content">
+            <!-- 이번 주 요약 카드 -->
+            <section class="summary-card">
+                <div class="summary-header">
+                    <span class="summary-label">이번 주 지출</span>
+                    <span class="week-badge" id="current-week">3주차</span>
                 </div>
-            </div>
-            <div class="glass-card summary-card fixed">
-                <div class="card-icon">📋</div>
-                <div class="card-content">
-                    <span class="label">고정비</span>
-                    <span class="amount" id="fixed-total">0원</span>
+                <div class="summary-amount" id="weekly-total">₩0</div>
+                <div class="summary-comparison" id="weekly-comparison">
+                    <span class="comparison-badge neutral">전주 대비 계산중...</span>
                 </div>
-            </div>
-            <div class="glass-card summary-card variable">
-                <div class="card-icon">🛒</div>
-                <div class="card-content">
-                    <span class="label">변동비</span>
-                    <span class="amount" id="variable-total">0원</span>
+            </section>
+
+            <!-- 카테고리별 지출 -->
+            <section class="card">
+                <div class="card-header">
+                    <h2 class="card-title">카테고리별 지출</h2>
+                    <span class="card-subtitle" id="category-subtitle">총 ₩0</span>
                 </div>
-            </div>
-            <div class="glass-card summary-card balance">
-                <div class="card-icon">📊</div>
-                <div class="card-content">
-                    <span class="label">총 지출</span>
-                    <span class="amount" id="balance-total">0원</span>
+                <div class="category-chart-container">
+                    <canvas id="category-pie-chart"></canvas>
                 </div>
-            </div>
-        </section>
+                <div class="category-list" id="category-list">
+                    <!-- 카테고리 항목들 -->
+                </div>
+            </section>
 
-        <section class="category-section">
-            <h2 class="section-title">📈 카테고리별 지출</h2>
-            <div class="category-grid" id="category-grid">
-                <!-- 카테고리별 차트가 여기에 생성됩니다 -->
-            </div>
-        </section>
+            <!-- 주차별 추이 차트 -->
+            <section class="card">
+                <div class="card-header">
+                    <h2 class="card-title">주차별 지출 추이</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="weekly-trend-chart"></canvas>
+                </div>
+            </section>
 
-        <section class="chart-section">
-            <h2 class="section-title">📊 주차별 지출 추이</h2>
-            <div class="glass-card chart-card">
-                <canvas id="weekly-chart"></canvas>
-            </div>
-        </section>
+            <!-- 주차 선택 탭 -->
+            <section class="week-selector">
+                <div class="week-tabs" id="week-tabs">
+                    <!-- 주차 탭들 -->
+                </div>
+            </section>
+        </main>
 
-        <section class="weekly-section">
-            <h2 class="section-title">📅 주차별 내역</h2>
-            <div class="week-tabs" id="week-tabs">
-                <!-- 주차 탭이 여기에 생성됩니다 -->
-            </div>
-            <div class="glass-card transactions-card">
-                <table class="transactions-table">
-                    <thead>
-                        <tr>
-                            <th>일자</th>
-                            <th>구분</th>
-                            <th>금액</th>
-                            <th>비고</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactions-body">
-                        <!-- 거래 내역이 여기에 생성됩니다 -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <footer class="glass-card footer">
-            <p>Made with 💕 for our family</p>
+        <!-- 푸터 -->
+        <footer class="footer">
+            <p id="footer-text">Made with 💕 for our family</p>
         </footer>
     </div>
+
+    <!-- Toast 컨테이너 -->
+    <div id="toast-container"></div>
 
     <!-- Scripts -->
     <script src="./js/config.js"></script>
